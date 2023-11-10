@@ -1,0 +1,184 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇 demo</title>
+  <style>
+    canvas {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      border: 2px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+
+    const canvas1 = document.createElement("canvas");
+    const ctx1 = canvas1.getContext("2d");
+    const canvas2 = document.createElement("canvas");
+    const ctx2 = canvas2.getContext("2d");
+
+    function canvasInit(canvas) {
+      canvas.width = 400;
+      canvas.height = 400;
+      document.body.appendChild(canvas);
+    }
+
+    canvasInit(canvas1)
+    canvasInit(canvas2)
+
+    const cell = 20;
+    let grid = {};// 用来判断棋盘格是否被占用
+    function gridInit() {
+      for (let i = 0; i < canvas1.width / cell; i++) {
+        for (let j = 0; j < canvas1.height / cell; j++) {
+          grid[`${i * cell}-${j * cell}`] = 0
+        }
+      }
+    }
+    gridInit()
+
+    // 绘制棋盘
+    function drawBoard() {
+      ctx1.save()
+      ctx1.strokeStyle = "#ccc"
+      for (let i = 0; i < canvas1.width / cell; i++) {
+        ctx1.beginPath()
+        ctx1.moveTo(i * cell, 0)
+        ctx1.lineTo(i * cell, canvas1.height)
+        ctx1.stroke()
+
+        ctx1.moveTo(0, i * cell)
+        ctx1.lineTo(canvas1.width, i * cell)
+        ctx1.stroke()
+      }
+      ctx1.restore()
+    }
+    drawBoard()
+
+    class Rect {
+      constructor(x, y, color = "hotpink", type = 1) {
+        this.x = x;
+        this.y = y;
+        this.oldX = x;
+        this.oldY = y;
+        this.w = cell;
+        this.h = cell;
+        this.color = color;
+        this.type = type;// 2 是食物 
+      }
+      draw() {
+        grid[`${this.oldX}-${this.oldY}`] = 0;
+        grid[`${this.x}-${this.y}`] = this.type;
+        ctx2.clearRect(this.oldX, this.oldY, this.w, this.h)
+        this.oldX = this.x;
+        this.oldY = this.y;
+        ctx2.save()
+        ctx2.beginPath()
+        ctx2.fillStyle = this.color;
+        ctx2.fillRect(this.x, this.y, this.w, this.h)
+        ctx2.restore()
+      }
+    }
+
+
+    // 随机生成食物
+    let food;
+    function randomFood() {
+      while (true) {
+        const x = Math.floor(Math.random() * canvas1.width / cell) * cell;
+        const y = Math.floor(Math.random() * canvas1.height / cell) * cell;
+        if (grid[`${x}-${y}`] === 0) {
+          food = new Rect(x, y, "skyblue", 2)
+          food.draw()
+          break;
+        }
+      }
+    }
+    randomFood()
+
+    class Snake {
+      constructor(x, y, dir = "ArrowRight") {
+        this.x = x * cell;
+        this.y = y * cell;
+        this.dir = dir;// ArrowUp ArrowRight ArrowDown ArrowLeft
+        this.head = new Rect(this.x, this.y, "deeppink");
+        this.body = [];
+      }
+
+      draw() {
+        this.head.draw()
+        if (!!this.body.length) { this.body[0].draw() }
+      }
+
+      move() {
+        switch (this.dir) {
+          case "ArrowUp": this.head.y -= cell; break;
+          case "ArrowRight": this.head.x += cell; break;
+          case "ArrowDown": this.head.y += cell; break;
+          case "ArrowLeft": this.head.x -= cell; break;
+        }
+        if (this.gameOver()) {
+          return alert("游戏结束")
+        }
+        if (this.isEat()) {
+
+          // 吃到食物，在 body 中添加一个
+          const part = new Rect(this.head.oldX, this.head.oldY)
+          this.body.unshift(part)
+          randomFood()
+        } else {
+          // 移动时，把身体的最后一个放到身体第一个
+          if (!!this.body.length) {
+            const last = this.body.pop()
+            last.x = this.head.oldX;
+            last.y = this.head.oldY;
+            this.body.unshift(last)
+          }
+        }
+        this.draw()
+        setTimeout(() => { this.move() }, 200)
+      }
+
+      gameOver() {
+        return this.head.x < 0 || this.head.x >= canvas2.width || this.head.y < 0 || this.head.y >= canvas2.height || grid[`${this.head.x}-${this.head.y}`] === 1;
+      }
+
+      isEat() {
+        return this.head.x === food.x && this.head.y === food.y;
+      }
+    }
+
+
+    canvas2.onclick = function () {
+      // 清空上一次内容
+      ctx2.clearRect(0, 0, canvas2.width, canvas2.height)
+      randomFood()
+
+      const snake = new Snake(10, 10)
+      snake.move()
+
+
+      document.onkeydown = function (e) {
+        if (e.code === "ArrowUp" || e.code === "ArrowRight" || e.code === "ArrowDown" || e.code === "ArrowLeft") {
+          if ((e.code === "ArrowUp" && snake.dir === "ArrowDown")
+            || (e.code === "ArrowDown" && snake.dir === "ArrowUp")
+            || (e.code === "ArrowRight" && snake.dir === "ArrowLeft")
+            || (e.code === "ArrowLeft" && snake.dir === "ArrowRight")) {
+            return;
+          }
+          snake.dir = e.code
+        }
+      }
+    }
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>刮刮乐 demo</title>
+  <style>
+    img {
+      width: 500px;
+      height: 500px;
+    }
+
+    canvas,
+    img {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <img src="./images/greenCat.jpeg" alt="">
+
+  <script>
+    (() => {
+      const canvas = document.createElement("canvas")
+      canvas.width = 500
+      canvas.height = 500
+      document.body.appendChild(canvas)
+
+      const cxt = canvas.getContext("2d")
+      cxt.rect(0, 0, 500, 500)
+      cxt.fillStyle = "#ccc"
+      cxt.fill()
+
+
+      cxt.globalCompositeOperation = "destination-out"
+
+      cxt.beginPath()
+      cxt.lineCap = "round"
+      cxt.lineJoin = "round"
+      cxt.lineWidth = 50
+      cxt.strokeStyle = "#fff"
+
+      canvas.onmousedown = function (e) {
+        cxt.moveTo(e.offsetX, e.offsetY)
+        canvas.onmousemove = function (e) {
+          cxt.lineTo(e.offsetX, e.offsetY)
+          cxt.stroke()
+        }
+        canvas.onmouseup = canvas.onmouseout = function () {
+          canvas.onmousemove = null
+          canvas.onmouseup = null
+        }
+      }
+    })()
+  </script>
+</body>
+
+</html>
