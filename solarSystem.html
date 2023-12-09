@@ -1,0 +1,321 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./index.css">
+  <title>solarSystem</title>
+</head>
+
+<body>
+  <script src="./three.js"></script>
+  <script>
+    const distance = 30;
+    const path = './public/images/';
+    const planets = [
+      {
+        name: 'Sun',
+        cname: '太阳',
+        radius: 50,
+        texture: '2k_sun.jpg'
+      },
+      {
+        name: 'Mercury',
+        cname: '水星',
+        texture: '2k_mercury.jpg',
+        radius: 2.5
+      },
+      {
+        name: 'Venus',
+        cname: '金星',
+        texture: '2k_venus_surface.jpg',
+        radius: 10
+      },
+      {
+        name: 'Earth',
+        cname: '地球',
+        texture: '2k_earth_daymap.jpg',
+        radius: 10,
+        children: [
+          {
+            name: 'Moon',
+            cname: '月球',
+            radius: 2,
+            texture: '2k_moon.jpg',
+          }
+        ]
+      },
+      {
+        name: 'Mars',
+        cname: '火星',
+        texture: '2k_mars.jpg',
+        radius: 8.5
+      },
+      {
+        name: 'Jupiter',
+        cname: '木星',
+        texture: '2k_jupiter.jpg',
+        radius: 15
+      },
+      {
+        name: 'Saturn',
+        cname: '土星',
+        texture: '2k_saturn.jpg',
+        radius: 12
+      },
+      {
+        name: 'Uranus',
+        cname: '天王星',
+        texture: '2k_uranus.jpg',
+        radius: 5
+      },
+      {
+        name: 'Neptune',
+        cname: '海王星',
+        texture: '2k_neptune.jpg',
+        radius: 5
+      },
+    ];
+    // 创建场景
+    const scene = new THREE.Scene();
+    // 透视投影 会根据远近距离缩放物体
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+    // 正交投影 不会改变物体大小
+    // const camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 10, 1000)
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true, // 抗锯齿
+    });
+    // 相机位置
+    camera.position.set(450, 100, 0);
+
+    // 设置渲染器的尺寸
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.appendChild(renderer.domElement);
+    scene.background = new THREE.TextureLoader().load(path + '2k_stars_milky_way.jpg')
+
+    function createBall(r, type, materi = {}) {
+      const ball = new THREE.SphereGeometry(r, 36, 36);
+      const obj = {
+        color: new THREE.Color(0xffffff),
+        side: THREE.FrontSide,
+      }
+      let material;
+      if (type === "Sun") {
+        material = new THREE.MeshBasicMaterial(Object.assign(obj, materi));
+      } else {
+        material = new THREE.MeshPhongMaterial(Object.assign(obj, materi));
+      }
+
+      // 网格模型 几何体和材质结合
+      const mesh = new THREE.Mesh(ball, material);
+      return mesh;
+    }
+
+    function createRing(r, r2, materi = {}, type) {
+      const ring = new THREE.RingGeometry(r, r2, 360, 1);
+      const obj = {
+        color: 0xffffff,
+        side: THREE.DoubleSide
+      }
+      let material;
+      if (type === "Saturn") {
+        material = new THREE.MeshPhongMaterial(Object.assign(obj, materi));
+      } else {
+        material = new THREE.MeshBasicMaterial(Object.assign(obj, materi));
+      }
+      const mesh = new THREE.Mesh(ring, material);
+      mesh.rotation.x = -Math.PI / 2;
+      return mesh;
+    }
+
+    let sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune;
+    let mercuryParent, venusParent, earthParent, marsParent, jupiterParent, saturnParent, uranusParent, neptuneParent;
+    const sys = [];
+    // 太阳系
+    const solarSystem = new THREE.Object3D();
+    // 地月系
+    const earthGroup = new THREE.Object3D();
+
+    function findItem(name) {
+      return [planets.find(item => item.name === name), planets.findIndex(item => item.name === name) + 1]
+    }
+
+    // 太阳
+    function createSun() {
+      const [item] = findItem("Sun");
+      sun = createBall(item.radius, item.name, {
+        map: new THREE.TextureLoader().load(path + item.texture)
+      });
+      const sunOuter = createBall(item.radius + 2, item.name, {
+        transparent: true,
+        opacity: 0.2,
+      });
+      sun.add(sunOuter);
+      // 光
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(0, 0, 0);
+      sun.add(pointLight)
+      solarSystem.add(sun);
+    }
+    // 地球
+    function createEarth() {
+      const [item, index] = findItem("Earth");
+      earthGroup.position.x = distance * index;
+      earth = createBall(item.radius, item.name, {
+        map: new THREE.TextureLoader().load(path + item.texture),
+        normalMap: new THREE.TextureLoader().load(path + 'earth_normal_2048.jpg'),
+        specularMap: new THREE.TextureLoader().load(path + 'earth_specular_2048.jpg')
+      });
+      const earthClouds = createBall(item.radius + 0.01, item.name, {
+        transparent: true,
+        opacity: 0.6,
+        map: new THREE.TextureLoader().load(path + '2k_earth_clouds.jpg')
+      });
+      earth.add(earthClouds);
+      // 月球
+      const child = item.children[0];
+      const moon = createBall(child.radius, child.name, {
+        map: new THREE.TextureLoader().load(path + child.texture)
+      });
+      moon.position.x = 20;
+      // 轨道
+      const earthOrbit = createRing(20, 20.1);
+      earthGroup.add(earthOrbit);
+      earthGroup.add(earth);
+      earthGroup.add(moon);
+      solarSystem.add(earthGroup);
+      earthParent = createParent(earthGroup);
+    }
+    // 金星
+    function createVenus() {
+      const [item, index] = findItem("Venus");
+      venus = createBall(item.radius, item.name, {
+        map: new THREE.TextureLoader().load(path + item.texture)
+      })
+      const venusClouds = createBall(item.radius + 0.01, "clouds", {
+        transparent: true,
+        opacity: 0.6,
+        map: new THREE.TextureLoader().load(path + '2k_venus_atmosphere.jpg')
+      });
+      venus.add(venusClouds);
+      venus.position.x = distance * index;
+      solarSystem.add(venus);
+      venusParent = createParent(venus);
+    }
+    // 土星
+    function createSaturn() {
+      const [item, index] = findItem("Saturn");
+      const saturnGroup = new THREE.Object3D();
+      saturnGroup.position.x = distance * index;
+      saturn = createBall(item.radius, item.name, {
+        map: new THREE.TextureLoader().load(path + item.texture)
+      })
+      const saturnRing = createRing(item.radius + 3, item.radius + 10, {
+        transparent: true,
+        opacity: 0.8,
+        // map: new THREE.TextureLoader().load(path + '2k_saturn_ring_alpha.png')
+      }, "Saturn");
+      saturnRing.rotation.x = -Math.PI / 3;
+      saturnGroup.add(saturn);
+      saturnGroup.add(saturnRing);
+      solarSystem.add(saturnGroup);
+      saturnParent = createParent(saturnGroup);
+    }
+
+    function createPlanets(name) {
+      const [item, index] = findItem(name);
+      const planet = createBall(item.radius, item.name, {
+        map: new THREE.TextureLoader().load(path + item.texture)
+      })
+      planet.position.x = distance * index;
+      solarSystem.add(planet);
+      const parent = createParent(planet);
+      return [planet, parent];
+    }
+
+    function createParent(planet) {
+      const group = new THREE.Object3D();
+      group.add(planet);
+      scene.add(group);
+      return group;
+    }
+
+    function initial() {
+      // 环境光
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+      scene.add(ambientLight);
+      // 太阳
+      createSun();
+      // 水星
+      [mercury, mercuryParent] = createPlanets("Mercury");
+      // 金星
+      createVenus();
+      // 地球
+      createEarth();
+      // 火星
+      [mars, marsParent] = createPlanets("Mars");
+      // 木星
+      [jupiter, jupiterParent] = createPlanets("Jupiter");
+      // 土星
+      createSaturn();
+      // 天王星
+      [uranus, uranusParent] = createPlanets("Uranus");
+      // 海王星
+      [neptune, neptuneParent] = createPlanets("Neptune");
+
+      // 轨道
+      for (let i = 1; i <= 9; i++) {
+        if (i === 1) {
+          continue;
+        }
+        const r = i * distance;
+        const orbit = createRing(r, r + 0.5);
+        scene.add(orbit);
+      }
+      scene.add(solarSystem)
+      renderer.render(scene, camera);
+      window.addEventListener('resize', onWindowResize, false);
+      requestAnimationFrame(rotate);
+    }
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    initial();
+
+    function revolution() {
+      mercuryParent.rotation.y += 0.0015;
+      venusParent.rotation.y += 0.00065;
+      earthParent.rotation.y += 0.005;
+      marsParent.rotation.y += 0.003;
+      jupiterParent.rotation.y += 0.001;
+      saturnParent.rotation.y += 0.002;
+      uranusParent.rotation.y += 0.009;
+      neptuneParent.rotation.y += 0.001;
+    }
+    function selfRotation() {
+      sun.rotation.y += 0.004;
+      mercury.rotation.y += 0.002;
+      venus.rotation.y += 0.005;
+      earthGroup.rotation.y += 0.01;
+      mars.rotation.y += 0.01;
+      jupiter.rotation.y += 0.08;
+      saturn.rotation.y += 1.5
+      uranus.rotation.y += 1;
+      neptune.rotation.y += 0.1;
+    }
+
+    function rotate() {
+      revolution();
+      selfRotation();
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      // 渲染到屏幕
+      renderer.render(scene, camera);
+      requestAnimationFrame(rotate)
+    }
+  </script>
+</body>
+
+</html>
