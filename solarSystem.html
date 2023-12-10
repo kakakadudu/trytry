@@ -3,15 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./index.css">
+  <link rel="stylesheet" href="./public/css/index.css">
   <title>solarSystem</title>
 </head>
 
 <body>
-  <script src="./three.js"></script>
+  <script src="./public/js/three.js"></script>
   <script>
     const distance = 30;
     const path = './public/images/';
+    const textures = [
+      new THREE.TextureLoader().load(path + '2k_mars.jpg'),
+      new THREE.TextureLoader().load(path + '2k_mercury.jpg'),
+      new THREE.TextureLoader().load(path + '2k_venus_surface.jpg'),
+      new THREE.TextureLoader().load(path + '2k_uranus.jpg'),
+      new THREE.TextureLoader().load(path + '2k_neptune.jpg'),
+      new THREE.TextureLoader().load(path + '2k_saturn.jpg'),
+      new THREE.TextureLoader().load(path + '2k_jupiter.jpg')
+    ]
     const planets = [
       {
         name: 'Sun',
@@ -129,6 +138,7 @@
       return mesh;
     }
 
+    const stars = [];
     let sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune;
     let mercuryParent, venusParent, earthParent, marsParent, jupiterParent, saturnParent, uranusParent, neptuneParent;
     const sys = [];
@@ -241,7 +251,28 @@
       return group;
     }
 
+    function createStar(count) {
+      for (let i = 0; i < count; i++) {
+        // 版本不支持 Point 所有使用 Sphere 代替
+        const ball = new THREE.SphereGeometry(Math.random(), 36, 36);
+        const material = new THREE.MeshPhongMaterial({
+          // color: new THREE.Color(Math.random() * 0xffffff),
+          map: textures[Math.floor(Math.random() * 7)],
+          transparent: true,
+          opacity: 0.9
+        });
+        // 网格模型 几何体和材质结合
+        const mesh = new THREE.Mesh(ball, material);
+        mesh.position.set(Math.random() * 1000 - 450, Math.random() * 800 - 100, Math.random() * 1000);
+        scene.add(mesh);
+        stars.push(mesh);
+      }
+    }
+    
     function initial() {
+      // 批量添加星星
+      createStar(500);
+
       // 环境光
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
       scene.add(ambientLight);
@@ -273,6 +304,7 @@
         const orbit = createRing(r, r + 0.5);
         scene.add(orbit);
       }
+
       scene.add(solarSystem)
       renderer.render(scene, camera);
       window.addEventListener('resize', onWindowResize, false);
@@ -310,6 +342,12 @@
     function rotate() {
       revolution();
       selfRotation();
+      stars.forEach(star => {
+        star.rotation.x += 0.01;
+        star.position.x += 0.01;
+        star.position.y += 0.01;
+        star.position.z += 0.01;
+      })
       camera.lookAt(new THREE.Vector3(0, 0, 0));
       // 渲染到屏幕
       renderer.render(scene, camera);
