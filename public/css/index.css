@@ -3,3 +3,47 @@
   padding: 0;
   list-style: none;
 }
+
+.switchs {
+  position: fixed;
+  background: transparent;
+  font-size: 14px;
+  color: #fff;
+  padding: 50px;
+}
+
+.switch-outer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.switch {
+  position: relative;
+  background: #9e9c9c;
+  display: block;
+  width: 60px;
+  height: 30px;
+  border-radius: 20px;
+  padding: 2px;
+  transition: all .3s;
+  cursor: pointer;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateX(0);
+}
+
+.switch.active {
+  background: #13b54c;
+}
+
+.switch.active::after {
+  transform: translateX(30px);
+}

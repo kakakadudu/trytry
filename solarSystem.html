@@ -8,18 +8,37 @@
 </head>
 
 <body>
+  <div class="switchs" style="display: none">
+    <div class="switch-outer">公转：<span onclick="toggle(event,'public')" class="switch"></span></div>
+    <div class="switch-outer">自转：<span onclick="toggle(event,'self')" class="switch"></span></div>
+  </div>
   <script src="./public/js/three.js"></script>
+  <!-- <script src="./public/js/three.min.js"></script> -->
   <script>
     const distance = 30;
     const path = './public/images/';
     const textures = [
-      new THREE.TextureLoader().load(path + '2k_mars.jpg'),
-      new THREE.TextureLoader().load(path + '2k_mercury.jpg'),
-      new THREE.TextureLoader().load(path + '2k_venus_surface.jpg'),
-      new THREE.TextureLoader().load(path + '2k_uranus.jpg'),
-      new THREE.TextureLoader().load(path + '2k_neptune.jpg'),
-      new THREE.TextureLoader().load(path + '2k_saturn.jpg'),
-      new THREE.TextureLoader().load(path + '2k_jupiter.jpg')
+      new THREE.TextureLoader().load(path + '2k_mars.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_mercury.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_venus_surface.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_uranus.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_neptune.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_saturn.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      }),
+      new THREE.TextureLoader().load(path + '2k_jupiter.jpg', tex => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      })
     ]
     const planets = [
       {
@@ -101,7 +120,9 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     document.body.appendChild(renderer.domElement);
-    scene.background = new THREE.TextureLoader().load(path + '2k_stars_milky_way.jpg')
+    scene.background = new THREE.TextureLoader().load(path + '2k_stars_milky_way.jpg', tex => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+    })
 
     function createBall(r, type, materi = {}) {
       const ball = new THREE.SphereGeometry(r, 36, 36);
@@ -139,13 +160,17 @@
     }
 
     const stars = [];
-    let sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune;
+    let sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune;
     let mercuryParent, venusParent, earthParent, marsParent, jupiterParent, saturnParent, uranusParent, neptuneParent;
     const sys = [];
     // 太阳系
     const solarSystem = new THREE.Object3D();
     // 地月系
     const earthGroup = new THREE.Object3D();
+    const landOrbit = new THREE.Object3D();
+    // 土星
+    const saturnGroup = new THREE.Object3D();
+    const saturnRing = new THREE.Object3D();
 
     function findItem(name) {
       return [planets.find(item => item.name === name), planets.findIndex(item => item.name === name) + 1]
@@ -155,7 +180,9 @@
     function createSun() {
       const [item] = findItem("Sun");
       sun = createBall(item.radius, item.name, {
-        map: new THREE.TextureLoader().load(path + item.texture)
+        map: new THREE.TextureLoader().load(path + item.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       });
       const sunOuter = createBall(item.radius + 2, item.name, {
         transparent: true,
@@ -173,27 +200,38 @@
       const [item, index] = findItem("Earth");
       earthGroup.position.x = distance * index;
       earth = createBall(item.radius, item.name, {
-        map: new THREE.TextureLoader().load(path + item.texture),
-        normalMap: new THREE.TextureLoader().load(path + 'earth_normal_2048.jpg'),
-        specularMap: new THREE.TextureLoader().load(path + 'earth_specular_2048.jpg')
+        map: new THREE.TextureLoader().load(path + item.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        }),
+        normalMap: new THREE.TextureLoader().load(path + 'earth_normal_2048.jpg', tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        }),
+        specularMap: new THREE.TextureLoader().load(path + 'earth_specular_2048.jpg', tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       });
       const earthClouds = createBall(item.radius + 0.01, item.name, {
         transparent: true,
         opacity: 0.6,
-        map: new THREE.TextureLoader().load(path + '2k_earth_clouds.jpg')
+        map: new THREE.TextureLoader().load(path + '2k_earth_clouds.jpg', tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       });
       earth.add(earthClouds);
       // 月球
       const child = item.children[0];
-      const moon = createBall(child.radius, child.name, {
-        map: new THREE.TextureLoader().load(path + child.texture)
+      moon = createBall(child.radius, child.name, {
+        map: new THREE.TextureLoader().load(path + child.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       });
       moon.position.x = 20;
       // 轨道
       const earthOrbit = createRing(20, 20.1);
-      earthGroup.add(earthOrbit);
+      landOrbit.add(earthOrbit);
+      landOrbit.add(moon);
+      earthGroup.add(landOrbit);
       earthGroup.add(earth);
-      earthGroup.add(moon);
       solarSystem.add(earthGroup);
       earthParent = createParent(earthGroup);
     }
@@ -201,12 +239,16 @@
     function createVenus() {
       const [item, index] = findItem("Venus");
       venus = createBall(item.radius, item.name, {
-        map: new THREE.TextureLoader().load(path + item.texture)
+        map: new THREE.TextureLoader().load(path + item.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       })
       const venusClouds = createBall(item.radius + 0.01, "clouds", {
         transparent: true,
         opacity: 0.6,
-        map: new THREE.TextureLoader().load(path + '2k_venus_atmosphere.jpg')
+        map: new THREE.TextureLoader().load(path + '2k_venus_atmosphere.jpg', tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       });
       venus.add(venusClouds);
       venus.position.x = distance * index;
@@ -214,21 +256,33 @@
       venusParent = createParent(venus);
     }
     // 土星
-    function createSaturn() {
+    function createSaturn(saturnStars = 300) {
       const [item, index] = findItem("Saturn");
-      const saturnGroup = new THREE.Object3D();
       saturnGroup.position.x = distance * index;
       saturn = createBall(item.radius, item.name, {
-        map: new THREE.TextureLoader().load(path + item.texture)
+        map: new THREE.TextureLoader().load(path + item.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       })
-      const saturnRing = createRing(item.radius + 3, item.radius + 10, {
-        transparent: true,
-        opacity: 0.8,
-        // map: new THREE.TextureLoader().load(path + '2k_saturn_ring_alpha.png')
-      }, "Saturn");
-      saturnRing.rotation.x = -Math.PI / 3;
-      saturnGroup.add(saturn);
+      // 土星环 
+      const geometry1 = new THREE.BufferGeometry();
+      let distance1 = 0, deg1 = 0;
+      for (let i = 0; i < saturnStars; i++) {
+        deg1 += Math.random() * 10 + 10;
+        distance1 = Math.random() * 5 + item.radius + 2;
+        const geometry1 = new THREE.SphereGeometry(Math.random() * 0.5 + 0.1, 36, 36);
+        const material1 = new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: Math.random() * 0.5 + 0.8
+        });
+        const point1 = new THREE.Mesh(geometry1, material1);
+        point1.position.set(distance1 * Math.cos(deg1 * Math.PI / 180), 0, distance1 * Math.sin(deg1 * Math.PI / 180));
+        saturnRing.add(point1);
+      }
+      saturnRing.rotation.x = Math.PI / 6;
       saturnGroup.add(saturnRing);
+      saturnGroup.add(saturn);
       solarSystem.add(saturnGroup);
       saturnParent = createParent(saturnGroup);
     }
@@ -236,7 +290,9 @@
     function createPlanets(name) {
       const [item, index] = findItem(name);
       const planet = createBall(item.radius, item.name, {
-        map: new THREE.TextureLoader().load(path + item.texture)
+        map: new THREE.TextureLoader().load(path + item.texture, tex => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+        })
       })
       planet.position.x = distance * index;
       solarSystem.add(planet);
@@ -267,12 +323,10 @@
         scene.add(mesh);
         stars.push(mesh);
       }
+      renderer.render(scene, camera);
     }
-    
-    function initial() {
-      // 批量添加星星
-      createStar(500);
 
+    function initial() {
       // 环境光
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
       scene.add(ambientLight);
@@ -288,8 +342,6 @@
       [mars, marsParent] = createPlanets("Mars");
       // 木星
       [jupiter, jupiterParent] = createPlanets("Jupiter");
-      // 土星
-      createSaturn();
       // 天王星
       [uranus, uranusParent] = createPlanets("Uranus");
       // 海王星
@@ -304,6 +356,17 @@
         const orbit = createRing(r, r + 0.5);
         scene.add(orbit);
       }
+
+      // 土星
+      setTimeout(() => {
+        createSaturn(300);
+        document.querySelector('.switchs').style.display = 'block';
+      }, 10);
+
+      // 星星
+      setTimeout(() => {
+        createStar(500);
+      }, 20);
 
       scene.add(solarSystem)
       renderer.render(scene, camera);
@@ -321,9 +384,11 @@
       mercuryParent.rotation.y += 0.0015;
       venusParent.rotation.y += 0.00065;
       earthParent.rotation.y += 0.005;
+      landOrbit.rotation.y += 0.01;// 月球绕地球
       marsParent.rotation.y += 0.003;
       jupiterParent.rotation.y += 0.001;
       saturnParent.rotation.y += 0.002;
+      saturnRing.rotation.y += 0.001;// 土星环小行星绕土星
       uranusParent.rotation.y += 0.009;
       neptuneParent.rotation.y += 0.001;
     }
@@ -331,17 +396,19 @@
       sun.rotation.y += 0.004;
       mercury.rotation.y += 0.002;
       venus.rotation.y += 0.005;
-      earthGroup.rotation.y += 0.01;
+      earth.rotation.y += 0.01;
       mars.rotation.y += 0.01;
       jupiter.rotation.y += 0.08;
-      saturn.rotation.y += 1.5
+      saturn.rotation.y += 1.5;
       uranus.rotation.y += 1;
       neptune.rotation.y += 0.1;
     }
 
+    let public = false, self = false;
     function rotate() {
-      revolution();
-      selfRotation();
+
+      !!public && revolution();
+      !!self && selfRotation();
       stars.forEach(star => {
         star.rotation.x += 0.01;
         star.position.x += 0.01;
@@ -352,6 +419,21 @@
       // 渲染到屏幕
       renderer.render(scene, camera);
       requestAnimationFrame(rotate)
+    }
+
+
+    function toggle(event, type) {
+      if (type === "self") {
+        self = !self;
+      }
+      if (type === "public") {
+        public = !public;
+      }
+      if (event.target.classList.contains("active")) {
+        event.target.classList.remove("active")
+      } else {
+        event.target.classList.add("active")
+      }
     }
   </script>
 </body>
