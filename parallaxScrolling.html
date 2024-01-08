@@ -1,0 +1,78 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>parallax scrolling</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    section {
+      height: 100vh;
+      width: 100vw;
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 100vh;
+    }
+
+    section:nth-of-type(1) {
+      background: url(https://picsum.photos/1600/800?random=1) center center / cover no-repeat;
+    }
+
+    section:nth-of-type(2) {
+      background: url(https://picsum.photos/1600/800?random=2) center center / cover no-repeat;
+    }
+
+    section:nth-of-type(3) {
+      background: url(https://picsum.photos/1600/800?random=3) center center / cover no-repeat;
+    }
+
+    section:nth-of-type(4) {
+      background: url(https://picsum.photos/1600/800?random=4) center center / cover no-repeat;
+    }
+
+    section:nth-of-type(5) {
+      background: url(https://picsum.photos/1600/800?random=5) center center / cover no-repeat;
+    }
+
+    section:nth-of-type(6) {
+      background: url(https://picsum.photos/1600/800?random=6) center center / cover no-repeat;
+    }
+  </style>
+</head>
+
+<body>
+  <section>HI! WELCOME</section>
+  <section>THIS IS THE SECOND</section>
+  <section>THIS IS THE THIRD</section>
+  <section>THIS IS THE FOURTH</section>
+  <section>THIS IS THE FIFTH</section>
+  <section>THIS IS THE SIXTH</section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+  <script>
+    const sections = document.querySelectorAll('section');
+    //list as many as you'd like
+    gsap.registerPlugin(ScrollTrigger);
+    //animate ".box" from an opacity of 0 to an opacity of 0.5
+    for (const section of sections) {
+      gsap.fromTo(section,
+        { backgroundPositionY: `-${window.innerHeight / 2}px` },
+        {
+          backgroundPositionY: `${window.innerHeight / 2}px`,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            scrub: true, // important!
+          }
+        });
+    }
+  </script>
+</body>
+
+</html>
