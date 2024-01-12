@@ -1,0 +1,65 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>code rain</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    :root,
+    canvas {
+      background: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    const fontSize = 20;
+    const columnWidth = fontSize;
+    const columnCount = Math.floor(width / columnWidth);// 列数
+    const nextChars = new Array(columnCount).fill(0);
+    function drawText() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";// 每调用一次，铺一层背景
+      ctx.fillRect(0, 0, width, height);
+      for (let i = 0; i < columnCount; i++) {
+        const char = randomText();
+        ctx.font = `${fontSize}px Microsoft YaHei`;
+        ctx.fillStyle = randomColor();
+        const x = columnWidth * i;
+        const index = nextChars[i];
+        const y = (index + 1) * fontSize;
+        nextChars[i] += 1;
+        if (y > height && Math.random() > 0.9) {
+          nextChars[i] = 0;
+        }
+        ctx.fillText(char, x, y);
+      }
+      requestAnimationFrame(drawText);
+    }
+    drawText();
+
+    function randomColor() {
+      return `hsla(${Math.random() * 360}, 100%, 50%, 1)`
+    }
+
+    function randomText() {
+      const str = 'console.log("code rain")';
+      return str[Math.floor(Math.random() * str.length)];
+    }
+
+  </script>
+</body>
+
+</html>
