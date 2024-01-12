@@ -1,0 +1,78 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tree</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    :root,
+    .tree {
+      background: #372620;
+    }
+
+    canvas {
+      background: #d4f2dd;
+    }
+
+    .tree {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tree"></div>
+  <script>
+    const canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 600;
+    document.querySelector(".tree").appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+
+    // 调整坐标系
+    ctx.translate(0, canvas.height);
+    ctx.scale(1, -1);
+
+    function drawBranch(v0, length, thick, dir) {
+      if (thick < 8 && Math.random() < 0.2) {
+        return;
+      }
+      if (thick < 2) {
+        ctx.beginPath();
+        ctx.moveTo(...v0);
+        ctx.fillStyle = `hsla(${Math.random() * 360}, 60%, 70%, 1)`;
+        ctx.arc(...v0, randomNumber(thick, thick + 2), 0, 2 * Math.PI);
+        ctx.fill();
+        return;
+      }
+      ctx.beginPath();
+      ctx.moveTo(...v0);
+      ctx.strokeStyle = "#372620";
+      ctx.lineWidth = thick;
+      ctx.lineCap = "round";
+      const v1 = [v0[0] + Math.cos(dir * Math.PI / 180) * length, v0[1] + Math.sin(dir * Math.PI / 180) * length]
+      ctx.lineTo(...v1);
+      ctx.stroke();
+
+      drawBranch(v1, length * 0.8, thick * 0.8, dir - Math.random() * 50);
+      drawBranch(v1, length * 0.8, thick * 0.8, dir + Math.random() * 50);
+    }
+    drawBranch([canvas.width / 2, 0], 100, randomNumber(15, 20), 90);
+
+    function randomNumber(min, max) {
+      return Math.ceil(Math.random() * (max - min) + min);
+    }
+  </script>
+</body>
+
+</html>
