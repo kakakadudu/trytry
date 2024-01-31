@@ -1,3 +1,7 @@
+/**
+ * 拼图游戏
+ */
+
 var config = {
   width: 520,
   height: 520,
@@ -10,6 +14,15 @@ var config = {
 config.pieceWidth = config.width / config.cols;
 config.pieceHeight = config.height / config.rows;
 
+/**
+ * 判断两个数字是否相等
+ * @param {number} num1
+ * @param {number} num2
+ * @returns 
+ */
+function isEuqal(num1, num2) {
+  return parseInt(num1) === parseInt(num2);
+}
 
 var blocks = [];
 
@@ -49,28 +62,7 @@ class Block {
   }
 }
 
-/**
- * 产生一个 {min,max} 的随机数，可以取到 max
- * @param {number} min 
- * @param {number} max 
- * @returns 
- */
-function getRandom(min, max) {
-  return Math.floor(Math.random() * (max + 1 - min) + min);
-}
-
-/**
- * 判断两个数字是否相等
- * @param {number} num1
- * @param {number} num2
- * @returns 
- */
-function isEuqal(num1, num2) {
-  return parseInt(num1) === parseInt(num2);
-}
-
-init();
-function init() {
+(function () {
   // 1.初始化拼图容器
   initWrap();
   // 2.初始化拼图格子
@@ -152,4 +144,14 @@ function init() {
     config.dom.style.border = "2px solid #ccc";
     config.dom.style.position = "relative";
   }
-}
+
+  /**
+   * 产生一个 {min,max} 的随机数，可以取到 max
+   * @param {number} min 
+   * @param {number} max 
+   * @returns 
+   */
+  function getRandom(min, max) {
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+  }
+})();

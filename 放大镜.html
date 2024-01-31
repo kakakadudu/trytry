@@ -1,0 +1,62 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>放大镜</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    .wrap {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      display: flex;
+      width: 850px;
+      height: 500px;
+    }
+
+    .small,
+    .big {
+      outline: 1px solid #ccc
+    }
+
+    .small {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
+
+    .big {
+      width: 500px;
+      height: 500px;
+      margin-left: 20px;
+      display: none;
+    }
+
+    .move {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.6);
+      cursor: move;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="small">
+      <div class="move"></div>
+    </div>
+    <div class="big"></div>
+  </div>
+
+  <script src="./public/js/magnifier.js"></script>
+</body>
+
+</html>

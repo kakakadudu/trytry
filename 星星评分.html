@@ -1,0 +1,91 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星星评分</title>
+  <style>
+    .wrap {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: 30px;
+      display: flex;
+      align-items: center;
+    }
+
+    .stars {
+      height: inherit;
+    }
+
+    img {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    .text {
+      width: 100px;
+      margin-left: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="stars">
+      <img src="./public/images/nobling.png" data-index="0" data-src1="./public/images/bling.png"
+        data-src0="./public/images/nobling.png">
+      <img src="./public/images/nobling.png" data-index="1" data-src1="./public/images/bling.png"
+        data-src0="./public/images/nobling.png">
+      <img src="./public/images/nobling.png" data-index="2" data-src1="./public/images/bling.png"
+        data-src0="./public/images/nobling.png">
+      <img src="./public/images/nobling.png" data-index="3" data-src1="./public/images/bling.png"
+        data-src0="./public/images/nobling.png">
+      <img src="./public/images/nobling.png" data-index="4" data-src1="./public/images/bling.png"
+        data-src0="./public/images/nobling.png">
+    </div>
+    <div class="text"></div>
+  </div>
+  <script>
+    const stars = document.querySelector(".stars");
+    const text = document.querySelector(".text");
+    const texts = ["牛逼", "好牛逼", "牛逼 plus", "好牛逼 plus", "牛逼 max"];
+    var star = -1;
+    stars.onmouseover = function (e) {
+      if (e.target.nodeName === "IMG") {
+        e.target.src = e.target.dataset.src1;
+        let prev = e.target.previousElementSibling;
+        while (prev) {
+          prev.src = prev.dataset.src1;
+          prev = prev.previousElementSibling;
+        }
+        let next = e.target.nextElementSibling;
+        while (next) {
+          next.src = next.dataset.src0;
+          next = next.nextElementSibling;
+        }
+        text.innerText = texts[+e.target.dataset.index];
+      }
+    }
+    stars.onmouseout = function (e) {
+      const imgs = Array.from(stars.children);
+      for (let i = 0; i < imgs.length; i++) {
+        if (i <= star) {
+          imgs[i].src = imgs[i].dataset.src1;
+        } else {
+          imgs[i].src = imgs[i].dataset.src0;
+        }
+      }
+      text.innerText = texts[star] || "";
+    }
+    stars.onclick = function (e) {
+      if (e.target.nodeName === "IMG") {
+        star = +e.target.dataset.index;
+      }
+    }
+  </script>
+</body>
+
+</html>
