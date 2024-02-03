@@ -1,0 +1,61 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>寄语墙</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    .wall {
+      position: relative;
+      height: 80vh;
+      width: 100vw;
+      background-color: #232320;
+      user-select: none;
+    }
+
+    .label {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background-color: aquamarine;
+      border-radius: 10px;
+      font-size: 14px;
+      padding: 10px;
+      box-sizing: border-box;
+      cursor: pointer;
+      word-wrap: break-word;
+    }
+
+    .label .del {
+      position: absolute;
+      font-size: 14px;
+      cursor: pointer;
+      right: 0;
+      top: 0;
+      width: 20px;
+      line-height: 20px;
+      text-align: center;
+    }
+    input{
+      height: 40px;
+      width: 50%;
+      display: block;
+      padding: 0 10px;
+      border-radius: 10px;
+      margin: calc(10vh - 20px) auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wall"></div>
+  <input type="text" placeholder="请输入你的寄语">
+  <script src="./public/js/messageWall.js"></script>
+</body>
+
+</html>

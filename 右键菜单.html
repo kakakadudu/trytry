@@ -1,0 +1,93 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>右键菜单</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    .wrap {
+      font-size: 14px;
+      padding: 20px;
+      line-height: 24px;
+    }
+
+    .wrap p {
+      text-indent: 2em;
+    }
+
+    .menu {
+      position: fixed;
+      width: 200px;
+      min-height: 300px;
+      background: #5a5959;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+      box-sizing: border-box;
+      padding: 10px 5px;
+      display: none;
+    }
+
+    .menu p {
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 23px;
+      color: #fff;
+      border-radius: 5px;
+      padding: 0 10px;
+    }
+
+    .menu .hover {
+      background: #047a04;
+    }
+
+    .menu .disabled {
+      color: #999;
+      cursor: default;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga placeat officiis aperiam pariatur rerum
+      exercitationem quia dolorem corrupti distinctio ex! Earum voluptatum officia doloremque minus soluta qui hic
+      explicabo molestias.</p>
+    <p>Numquam debitis placeat modi distinctio voluptate nam libero vero aliquid ut magnam quae aliquam similique
+      accusantium, nesciunt corporis, ducimus praesentium veniam explicabo voluptatibus tempore vitae quos? Sunt
+      laudantium eaque illum!</p>
+    <p>Dicta culpa laboriosam error ad quibusdam repudiandae id! Quas nemo est quaerat vitae consectetur, officiis
+      repellendus doloribus illo corrupti dolor sit atque aliquam accusamus recusandae ipsam repellat eveniet, explicabo
+      velit.</p>
+    <p>Commodi rerum officia fugit libero veritatis possimus assumenda vitae, eum nemo numquam. Iure, officiis dolores.
+      Eum sequi exercitationem adipisci odio qui amet magni, distinctio provident molestiae laborum voluptatum
+      dignissimos omnis.</p>
+    <p>Ducimus dignissimos soluta odit esse voluptatibus dolorem ipsum! Saepe laudantium esse et quae sed dolore
+      possimus aut excepturi, mollitia ipsa corporis delectus. Ipsa laboriosam deleniti iste perspiciatis corporis,
+      inventore fuga!</p>
+    <p>Quibusdam qui laborum eos magni? Sequi incidunt, est ea natus tempora earum optio aliquam ut, a fuga corporis
+      quis adipisci voluptatem magnam dolorum aliquid delectus cupiditate iure similique ratione ipsa?</p>
+    <p>Placeat optio distinctio quaerat dolore dolorem numquam doloremque consectetur omnis iure sequi laudantium maxime
+      repellendus totam possimus culpa assumenda, facilis dicta deserunt? Necessitatibus iste dolor molestias, ad magni
+      voluptates repellendus?</p>
+    <p>Debitis, quod doloremque vero molestias libero, amet tempore commodi facere consequuntur aperiam dolorum
+      consequatur aut, vitae laboriosam perspiciatis obcaecati. Molestias placeat repudiandae distinctio ad qui a atque
+      voluptate dolor perferendis?</p>
+    <p>Iste perferendis pariatur odio repellendus quis, quas in beatae, porro sunt distinctio quo non? Eaque cupiditate
+      magnam quod corrupti voluptatem numquam quis dignissimos ipsam illo amet sunt et, esse asperiores.</p>
+    <p>Recusandae fugit error eum, consectetur quia, deleniti atque architecto exercitationem minus quaerat numquam id
+      animi! Molestiae voluptatibus eaque suscipit corrupti laborum expedita nemo delectus, et quae ab ipsa laboriosam
+      temporibus?</p>
+  </div>
+  <div class="menu">
+    <p>复制</p>
+    <p>粘贴</p>
+  </div>
+  <script src="./public/js/contextmenu.js"></script>
+</body>
+
+</html>
